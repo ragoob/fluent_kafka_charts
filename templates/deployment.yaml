@@ -97,15 +97,6 @@ spec:
             containerPort: 9880
             protocol: TCP
         livenessProbe:
-          httpGet:
-            # Use percent encoding for query param.
-            # The value is {"log": "health check"}.
-            # the endpoint itself results in a new fluentd
-            # tag 'fluentd.pod-healthcheck'
-            path: /fluentd.pod.healthcheck?json=%7B%22log%22%3A+%22health+check%22%7D
-            port: 9880
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
         volumeMounts:
         - name: config-volume-{{ template "fluentd.fullname" . }}
           mountPath: /etc/fluent/config.d
