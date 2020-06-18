@@ -123,7 +123,7 @@ configMaps:
       root_dir /tmp/fluentd-buffers/
     </system>
   forward-input.conf: |
-    <source>
+    <source **>
      @type kafka
      host "#{ENV['KAFKA_OUTPUT_HOST']}"
      port "#{ENV['KAFKA_OUTPUT_PORT']}"
