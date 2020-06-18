@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: regoo707/fluentd
-  tag: 2
+  tag: 3
   pullPolicy: Always
   # pullSecrets:
   #   - secret1
