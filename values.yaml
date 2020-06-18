@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 image:
   repository: regoo707/fluentd
-  tag: 1
+  tag: 2
   pullPolicy: Always
   # pullSecrets:
   #   - secret1
@@ -47,7 +47,7 @@ plugins:
 
 service:
   annotations: {}
-  type: ClusterIP
+  type: NodePort
   # loadBalancerIP:
   # type: NodePort
   # nodePort:
