@@ -117,27 +117,19 @@ configMaps:
       port 24220
       tag fluentd.monitor.metrics
     </source>
-     <source>
-     @type kafka
-     host "#{ENV['KAFKA_OUTPUT_HOST']}"
-     port "#{ENV['KAFKA_OUTPUT_PORT']}"
-     topics "#{ENV['KAFKA_OUTPUT_TOPICS']}"
-     format "#{ENV['KAFKA_OUTPUT_FORMAT']}"
-     max_wait_time 8
+    <source>
+    @type kafka
+    host mybuild.centralus.cloudapp.azure.com
+    port 9092
+    topics Logger
+    format json
+    max_wait_time 8
     </source>
   system.conf: |-
     <system>
       root_dir /tmp/fluentd-buffers/
     </system>
   forward-input.conf: |
-   <source>
-     @type kafka
-     host "#{ENV['KAFKA_OUTPUT_HOST']}"
-     port "#{ENV['KAFKA_OUTPUT_PORT']}"
-     topics "#{ENV['KAFKA_OUTPUT_TOPICS']}"
-     format "#{ENV['KAFKA_OUTPUT_FORMAT']}"
-     max_wait_time 8
-    </source>
   output.conf: |
     <match **>
       @id elasticsearch
@@ -160,6 +152,15 @@ configMaps:
         retry_forever
         retry_max_interval 30
       </buffer>
+    </match>
+    <match Logger>
+    @type file
+     path ./logs/
+    <buffer>
+    timekey 1d
+    timekey_use_utc true
+    timekey_wait 10m
+    </buffer>
     </match>
 
 resources: {}
