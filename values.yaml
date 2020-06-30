@@ -2,8 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 image:
-  repository: regoo707/fluentd
-  tag: 3
+  repository: registry.factory.aptargroup.biz/logging-service/kafkafluentd
+  tag: latest
   pullPolicy: Always
   # pullSecrets:
   #   - secret1
@@ -108,6 +108,15 @@ configMaps:
       bind 0.0.0.0
     </source>
 
+    # Emits internal metrics to every minute, and also exposes them on port
+    # 24220. Useful for determining if an output plugin is retryring/erroring,
+    # or determining the buffer queue length.
+    <source>
+      @type monitor_agent
+      bind 0.0.0.0
+      port 24220
+      tag fluentd.monitor.metrics
+    </source>
      <source>
      @type kafka
      host "#{ENV['KAFKA_OUTPUT_HOST']}"
@@ -121,19 +130,36 @@ configMaps:
       root_dir /tmp/fluentd-buffers/
     </system>
   forward-input.conf: |
-   
+   <source>
+     @type kafka
+     host "#{ENV['KAFKA_OUTPUT_HOST']}"
+     port "#{ENV['KAFKA_OUTPUT_PORT']}"
+     topics "#{ENV['KAFKA_OUTPUT_TOPICS']}"
+     format "#{ENV['KAFKA_OUTPUT_FORMAT']}"
+     max_wait_time 8
+    </source>
   output.conf: |
     <match **>
-    
-  @type file
-  path /var/log/
-  compress gzip
-  <buffer>
-    timekey 1d
-    timekey_use_utc true
-    timekey_wait 10m
-  </buffer>
-
+      @id elasticsearch
+      @type elasticsearch
+      @log_level info
+      include_tag_key true
+      # Replace with the host/port to your Elasticsearch cluster.
+      host "#{ENV['OUTPUT_HOST']}"
+      port "#{ENV['OUTPUT_PORT']}"
+      scheme "#{ENV['OUTPUT_SCHEME']}"
+      ssl_version "#{ENV['OUTPUT_SSL_VERSION']}"
+      logstash_format true
+      <buffer>
+        @type file
+        path /logs/
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 2
+        flush_interval 5s
+        retry_forever
+        retry_max_interval 30
+      </buffer>
     </match>
 
 resources: {}
