@@ -9,7 +9,7 @@ image:
   #   - secret1
   #   - secret2
 kafkaInput:
-  host: kafka-client.default.svc.cluster.local
+  host: mybuild.centralus.cloudapp.azure.com
   port: 9092
   topics: Logger
   format: json
@@ -117,7 +117,7 @@ configMaps:
       port 24220
       tag fluentd.monitor.metrics
     </source>
-     <source **>
+     <source>
      @type kafka
      host "#{ENV['KAFKA_OUTPUT_HOST']}"
      port "#{ENV['KAFKA_OUTPUT_PORT']}"
@@ -145,7 +145,7 @@ configMaps:
       logstash_format true
       <buffer>
         @type file
-        path /var/log/fluentd-buffers/kubernetes.system.buffer
+        path /logs/
         flush_mode interval
         retry_type exponential_backoff
         flush_thread_count 2
