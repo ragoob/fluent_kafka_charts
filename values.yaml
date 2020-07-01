@@ -109,28 +109,6 @@ configMaps:
   forward-input.conf: |
   output.conf: |
     <match **>
-      @id elasticsearch
-      @type elasticsearch
-      @log_level info
-      include_tag_key true
-      # Replace with the host/port to your Elasticsearch cluster.
-      host "#{ENV['OUTPUT_HOST']}"
-      port "#{ENV['OUTPUT_PORT']}"
-      scheme "#{ENV['OUTPUT_SCHEME']}"
-      ssl_version "#{ENV['OUTPUT_SSL_VERSION']}"
-      logstash_format true
-      <buffer>
-        @type file
-        path /logs/
-        flush_mode interval
-        retry_type exponential_backoff
-        flush_thread_count 2
-        flush_interval 5s
-        retry_forever
-        retry_max_interval 30
-      </buffer>
-    </match>
-    <match Logger>
     @type file
      path ./logs/
     <buffer>
